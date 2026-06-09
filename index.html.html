@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Historia</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+            color: #4a4a4a;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .oculto { display: none !important; }
+
+        /* --- EFECTO: LLUVIA DE PÉTALOS Y CORAZONES --- */
+        .contenedor-lluvia {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; 
+            z-index: 0;
+        }
+
+        .petalo {
+            position: absolute;
+            background-color: #ffb7c5;
+            border-radius: 15px 2px 15px 2px; 
+            opacity: 0.7;
+            animation: caer linear infinite;
+        }
+
+        .corazon-flotante {
+            position: absolute;
+            color: #ff69b4;
+            opacity: 0.6;
+            font-size: 1.2rem;
+            animation: caer linear infinite;
+        }
+
+        @keyframes caer {
+            0% {
+                transform: translateY(-20px) rotate(0deg) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(105vh) rotate(720deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* --- PANTALLA DE INICIO --- */
+        .pantalla-inicio {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 1s ease-in-out;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+            z-index: 1; 
+        }
+
+        .pantalla-inicio h1 {
+            font-size: 3.5rem;
+            color: #ff69b4;
+            text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.3);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .pantalla-inicio h2 {
+            font-size: 1.6rem;
+            color: #ff479d;
+            font-weight: 400;
+            margin-bottom: 40px;
+        }
+
+        /* --- SECCIÓN SOBRES --- */
+        .seccion-sobres {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .contenedor-sobre {
+            position: relative;
+            width: 140px;
+            height: 95px;
+            background-color: #ffb6c1;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 8px 20px rgba(244, 143, 177, 0.4);
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .contenedor-sobre:hover {
+            transform: translateY(-5px);
+        }
+
+        .contenedor-sobre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 70px solid transparent;
+            border-right: 70px solid transparent;
+            border-top: 55px solid #ff99aa;
+            border-radius: 6px 6px 0 0;
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.4s ease, border-top-color 0.4s;
+        }
+
+        .contenedor-sobre::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 70px solid #ffa2b2;
+            border-right: 70px solid #ffa2b2;
+            border-bottom: 50px solid #ff91a4;
+            border-radius: 0 0 12px 12px;
+            z-index: 3;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .carta-mensaje {
+            position: absolute;
+            bottom: 5px;
+            left: 12px;
+            width: 116px;
+            height: 80px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+            font-size: 0.7rem;
+            color: #5c5c5c;
+            font-style: italic;
+            font-weight: bold;
+            line-height: 1.3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 2;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), height 0.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+            border: 1px dashed #ffb6c1;
+        }
+
+        .contenedor-sobre.abierto {
+            transform: translateY(25px);
+        }
+
+        .contenedor-sobre.abierto::before {
+            transform: rotateX(180deg);
+            border-top-color: #ffb6c1;
+            z-index: 1;
+        }
+
+        .contenedor-sobre.abierto .carta-mensaje {
+            transform: translateY(-85px);
+            height: 125px;
+            z-index: 5;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            font-size: 0.78rem;
+            background: #fffcf7;
+        }
+
+        /* --- BOTONES PREMIUM --- */
+        .btn-iniciar {
+            background: linear-gradient(45deg, #ff69b4, #ff479d);
+            color: white;
+            border: none;
+            padding: 16px 50px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            z-index: 10;
+        }
+
+        .btn-iniciar:hover {
+            background: linear-gradient(45deg, #ff479d, #ff1493);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.6);
+        }
+
+        /* NUEVO: Botón Flotante para Regresar */
+        .btn-regresar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            color: #ff479d;
+            border: 1.5px solid rgba(255, 105, 180, 0.4);
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            z-index: 50; /* Por encima de todo el collage */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-regresar:hover {
+            background-color: #ff69b4;
+            color: white;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+        }
+
+        /* --- PANTALLA CONTENIDO --- */
+        .pantalla-contenido {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeIn 1.5s ease-in-out;
+            z-index: 1;
+        }
+
+        .corazon-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 78px);
+            grid-template-rows: repeat(8, 78px);
+            gap: 8px;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .foto-collage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+        }
+
+        .foto-collage:hover {
+            transform: scale(1.22);
+            z-index: 10;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* --- CONTADOR CENTRAL --- */
+        .contador-centro {
+            grid-column: 4 / span 3;
+            grid-row: 4 / span 2;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid rgba(255, 105, 180, 0.5);
+            z-index: 5;
+            box-sizing: border-box;
+        }
+
+        .contador-titulo {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ff479d;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .tiempo-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .tiempo-linea {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #4a4a4a;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 14px;
+            box-sizing: border-box;
+            border-bottom: 1px dashed rgba(255, 182, 193, 0.4);
+        }
+
+        .tiempo-linea:last-child {
+            border-bottom: none;
+        }
+
+        .tiempo-linea span {
+            color: #ff1493;
+            text-shadow: 1px 1px 2px rgba(255,20,147,0.1);
+        }
+
+        /* --- MODAL ZOOM --- */
+        .modal-zoom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 10, 12, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-zoom.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-img {
+            max-width: 85%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 0 35px rgba(255, 105, 180, 0.3);
+            transform: scale(0.92);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-zoom.activo .modal-img {
+            transform: scale(1);
+        }
+
+        /* Coordenadas Corazón */
+        .f1  { grid-column: 3; grid-row: 1; }
+        .f2  { grid-column: 7; grid-row: 1; }
+        .f3  { grid-column: 2; grid-row: 2; }
+        .f4  { grid-column: 3; grid-row: 2; }
+        .f5  { grid-column: 4; grid-row: 2; }
+        .f6  { grid-column: 6; grid-row: 2; }
+        .f7  { grid-column: 7; grid-row: 2; }
+        .f8  { grid-column: 8; grid-row: 2; }
+        .f9  { grid-column: 1; grid-row: 3; }
+        .f10 { grid-column: 2; grid-row: 3; }
+        .f11 { grid-column: 3; grid-row: 3; }
+        .f12 { grid-column: 4; grid-row: 3; }
+        .f13 { grid-column: 5; grid-row: 3; }
+        .f14 { grid-column: 6; grid-row: 3; }
+        .f15 { grid-column: 7; grid-row: 3; }
+        .f16 { grid-column: 8; grid-row: 3; }
+        .f17 { grid-column: 9; grid-row: 3; }
+        .f18 { grid-column: 1; grid-row: 4; }
+        .f19 { grid-column: 2; grid-row: 4; }
+        .f20 { grid-column: 3; grid-row: 4; }
+        .f21 { grid-column: 7; grid-row: 4; }
+        .f22 { grid-column: 8; grid-row: 4; }
+        .f23 { grid-column: 9; grid-row: 4; }
+        .f24 { grid-column: 1; grid-row: 5; }
+        .f25 { grid-column: 2; grid-row: 5; }
+        .f26 { grid-column: 3; grid-row: 5; }
+        .f27 { grid-column: 7; grid-row: 5; }
+        .f28 { grid-column: 8; grid-row: 5; }
+        .f29 { grid-column: 9; grid-row: 5; }
+        .f30 { grid-column: 2; grid-row: 6; }
+        .f31 { grid-column: 3; grid-row: 6; }
+        .f32 { grid-column: 4; grid-row: 6; }
+        .f33 { grid-column: 6; grid-row: 6; }
+        .f34 { grid-column: 7; grid-row: 6; }
+        .f35 { grid-column: 8; grid-row: 6; }
+        .f36 { grid-column: 3; grid-row: 7; }
+        .f37 { grid-column: 4; grid-row: 7; }
+        .f38 { grid-column: 6; grid-row: 7; }
+        .f39 { grid-column: 7; grid-row: 7; }
+        .f40 { grid-column: 5; grid-row: 8; } 
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- DISEÑO MÓVIL OPTIMIZADO --- */
+        @media (max-width: 730px) {
+            .corazon-grid {
+                grid-template-columns: repeat(9, 38px);
+                grid-template-rows: repeat(8, 38px);
+                gap: 4px;
+            }
+            .pantalla-inicio h1 { font-size: 2rem; }
+            .pantalla-inicio h2 { font-size: 1.1rem; }
+            .seccion-sobres { gap: 16px; margin-bottom: 40px; padding: 5px; }
+            .contenedor-sobre { width: 74px; height: 52px; border-radius: 0 0 6px 6px; }
+            .contenedor-sobre::before { border-left-width: 37px; border-right-width: 37px; border-top-width: 32px; }
+            .contenedor-sobre::after { border-left-width: 37px; border-right-width: 37px; border-bottom-width: 26px; border-radius: 0 0 6px 6px; }
+            .carta-mensaje { width: 60px; height: 44px; left: 7px; font-size: 0.38rem; padding: 4px; border-radius: 4px; }
+            .contenedor-sobre.abierto .carta-mensaje { transform: translateY(-50px); height: 78px; font-size: 0.44rem; }
+            .contador-centro { padding: 4px; border-radius: 12px; }
+            .tiempo-linea { font-size: 0.55rem; padding: 1px 6px; }
+            .contador-titulo { font-size: 0.45rem; margin-bottom: 3px; letter-spacing: 0.8px; }
+            .btn-regresar { top: 10px; left: 10px; padding: 5px 12px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-lluvia" id="capaLluvia"></div>
+
+    <div id="pantallaInicio" class="pantalla-inicio">
+        <h1>09 DE NOVIEMBRE DE 2025</h1>
+        <h2>El comienzo de todo... ❤️</h2>
+        
+        <div class="seccion-sobres">
+            <div class="contenedor-sobre" onclick="alternarSobre(this)">
+                <div class="carta-mensaje">Te amo tal y como eres</div>
+            </div>
+            <div class="contenedor-sobre" onclick="alternarSobre(this)">
+                <div class="carta-mensaje">Te amo de aquí al fondo del mar en brinquitos de medusa</div>
+            </div>
+            <div class="contenedor-sobre" onclick="alternarSobre(this)">
+                <div class="carta-mensaje">Me encanta la manera tan intensa en la que sabes amar</div>
+            </div>
+            <div class="contenedor-sobre" onclick="alternarSobre(this)">
+                <div class="carta-mensaje">Para mí siempre lo serás todo, te amo con todo mi corazón</div>
+            </div>
+        </div>
+
+        <button class="btn-iniciar" onclick="mostrarHistoria()">Iniciar</button>
+    </div>
+
+    <div id="pantallaContenido" class="pantalla-contenido oculto">
+        
+        <button class="btn-regresar" onclick="regresarInicio()">← Volver</button>
+
+        <div class="corazon-grid" id="contenedorCorazon">
+            
+            <div class="contador-centro">
+                <div class="contador-titulo">Llevamos Juntos</div>
+                <div class="tiempo-grid">
+                    <div class="tiempo-linea"><span id="totDias">0</span> Días</div>
+                    <div class="tiempo-linea"><span id="totHoras">0</span> Horas</div>
+                    <div class="tiempo-linea"><span id="totMinutos">0</span> Minutos</div>
+                    <div class="tiempo-linea"><span id="totSegundos">0</span> Segundos</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="modalZoom" class="modal-zoom" onclick="cerrarImagen()">
+        <img id="imgModal" class="modal-img" src="" alt="Zoom">
+    </div>
+
+    <script>
+        let intervaloReloj; // Variable global para controlar el temporizador
+
+        function crearLluvia() {
+            const contenedor = document.getElementById('capaLluvia');
+            const totalElementos = 30; 
+
+            for (let i = 0; i < totalElementos; i++) {
+                const esCorazon = Math.random() > 0.6;
+                const el = document.createElement('div');
+
+                if (esCorazon) {
+                    el.className = 'corazon-flotante';
+                    el.innerHTML = '❤️';
+                } else {
+                    el.className = 'petalo';
+                    const colores = ['#ffb7c5', '#ff9aa2', '#ffccd5', '#ffa6c9'];
+                    el.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                    
+                    const tamaño = Math.random() * 8 + 8; 
+                    el.style.width = `${tamaño}px`;
+                    el.style.height = `${tamaño + 4}px`;
+                }
+
+                el.style.left = `${Math.random() * 100}vw`;
+                const duracion = Math.random() * 5 + 6; 
+                const retraso = Math.random() * -10; 
+                el.style.animationDuration = `${duracion}s`;
+                el.style.animationDelay = `${retraso}s`;
+
+                contenedor.appendChild(el);
+            }
+        }
+
+        function alternarSobre(elemento) {
+            elemento.classList.toggle('abierto');
+        }
+
+        function cargarFotos() {
+            const contenedor = document.getElementById('contenedorCorazon');
+            
+            for (let i = 1; i <= 39; i++) {
+                const img = document.createElement('img');
+                
+                let clasePosicion = i;
+                if (i >= 31) clasePosicion = i + 1;
+                
+                img.className = `foto-collage f${clasePosicion}`;
+                img.alt = `Foto ${i}`;
+                
+                if (i === 19 || i === 20 || i === 21) {
+                    img.src = `foto${i}.jpg.webp`;
+                } else {
+                    img.src = `foto${i}.jpg.jpg`;
+                }
+
+                img.onerror = function() {
+                    if (this.src.includes('.jpg.jpg')) {
+                        this.src = `foto${i}.jpg`;
+                    } else if (this.src.includes('.jpg.webp')) {
+                        this.src = `foto${i}.webp`;
+                    }
+                };
+
+                img.onclick = function() {
+                    abrirImagen(this.src);
+                };
+                
+                contenedor.appendChild(img);
+            }
+        }
+
+        function abrirImagen(ruta) {
+            const modal = document.getElementById('modalZoom');
+            const imgModal = document.getElementById('imgModal');
+            imgModal.src = ruta;
+            modal.classList.add('activo');
+        }
+
+        function cerrarImagen() {
+            const modal = document.getElementById('modalZoom');
+            modal.classList.remove('activo');
+        }
+
+        function mostrarHistoria() {
+            document.getElementById('pantallaInicio').classList.add('oculto');
+            document.getElementById('pantallaContenido').classList.remove('oculto');
+            inicializarContador();
+        }
+
+        // FUNCIÓN NUEVA: Regresar al menú de inicio limpiamente
+        function regresarInicio() {
+            // Detiene el reloj para ahorrar recursos mientras no se use
+            clearInterval(intervaloReloj); 
+            
+            document.getElementById('pantallaContenido').classList.add('oculto');
+            document.getElementById('pantallaInicio').classList.remove('oculto');
+            
+            // Cierra los sobres automáticamente para que pueda volver a abrirlos si quiere
+            const sobres = document.querySelectorAll('.contenedor-sobre');
+            sobres.forEach(sobre => sobre.classList.remove('abierto'));
+        }
+
+        function inicializarContador() {
+            const fechaInicio = new Date(2025, 10, 9, 0, 0, 0);
+
+            function actualizar() {
+                const ahora = new Date();
+                const diferenciaMs = ahora - fechaInicio;
+
+                const diasTotales = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+                const horasTotales = Math.floor(diferenciaMs / (1000 * 60 * 60));
+                const minutosTotales = Math.floor(diferenciaMs / (1000 * 60));
+                const segundosTotales = Math.floor(diferenciaMs / 1000);
+
+                document.getElementById('totDias').innerText = diasTotales.toLocaleString();
+                document.getElementById('totHoras').innerText = horasTotales.toLocaleString();
+                document.getElementById('totMinutos').innerText = minutosTotales.toLocaleString();
+                document.getElementById('totSegundos').innerText = segundosTotales.toLocaleString();
+            }
+
+            actualizar();
+            intervaloReloj = setInterval(actualizar, 1000);
+        }
+
+        window.onload = function() {
+            crearLluvia();
+            cargarFotos();
+        };
+    </script>
+</body>
+</html>
